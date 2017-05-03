@@ -1,0 +1,70 @@
+diff -r 1a0384d12165 Lib/test/test_functools.py
+--- a/Lib/test/test_functools.py	Sun Jun 07 00:00:48 2015 -0500
++++ b/Lib/test/test_functools.py	Sun Jun 07 09:43:00 2015 +0300
+@@ -1170,6 +1170,37 @@ class TestLRU:
+             def f():
+                 pass
+ 
++    def test_lru_method(self):
++        class X(int):
++            f_cnt = 0
++            @self.module.lru_cache(2)
++            def f(self, x):
++                self.f_cnt += 1
++                return x*10+self
++        a = X(5)
++        b = X(5)
++        c = X(7)
++        self.assertEqual(X.f.cache_info(), (0, 0, 2, 0))
++
++        for x in 1, 2, 2, 3, 1, 1, 1, 2, 3, 3:
++            self.assertEqual(a.f(x), x*10 + 5)
++        self.assertEqual((a.f_cnt, b.f_cnt, c.f_cnt), (6, 0, 0))
++        self.assertEqual(X.f.cache_info(), (4, 6, 2, 2))
++
++        for x in 1, 2, 1, 1, 1, 1, 3, 2, 2, 2:
++            self.assertEqual(b.f(x), x*10 + 5)
++        self.assertEqual((a.f_cnt, b.f_cnt, c.f_cnt), (6, 4, 0))
++        self.assertEqual(X.f.cache_info(), (10, 10, 2, 2))
++
++        for x in 2, 1, 1, 1, 1, 2, 1, 3, 2, 1:
++            self.assertEqual(c.f(x), x*10 + 7)
++        self.assertEqual((a.f_cnt, b.f_cnt, c.f_cnt), (6, 4, 5))
++        self.assertEqual(X.f.cache_info(), (15, 15, 2, 2))
++
++        self.assertEqual(a.f.cache_info(), X.f.cache_info())
++        self.assertEqual(b.f.cache_info(), X.f.cache_info())
++        self.assertEqual(c.f.cache_info(), X.f.cache_info())
++
+ class TestLRUC(TestLRU, unittest.TestCase):
+     module = c_functools
+ 
+diff -r 1a0384d12165 Modules/_functoolsmodule.c
+--- a/Modules/_functoolsmodule.c	Sun Jun 07 00:00:48 2015 -0500
++++ b/Modules/_functoolsmodule.c	Sun Jun 07 09:43:00 2015 +0300
+@@ -1004,6 +1004,16 @@ lru_cache_call(lru_cache_object *self, P
+ }
+ 
+ static PyObject *
++lru_cache_descr_get(PyObject *self, PyObject *obj, PyObject *type)
++{
++    if (obj == Py_None || obj == NULL) {
++        Py_INCREF(self);
++        return self;
++    }
++    return PyMethod_New(self, obj);
++}
++
++static PyObject *
+ lru_cache_cache_info(lru_cache_object *self, PyObject *unused)
+ {
+     return PyObject_CallFunction(self->cache_info_type, "nnOn",
+@@ -1115,7 +1125,7 @@ static PyTypeObject lru_cache_type = {
+     lru_cache_getsetlist,               /* tp_getset */
+     0,                                  /* tp_base */
+     0,                                  /* tp_dict */
+-    0,                                  /* tp_descr_get */
++    lru_cache_descr_get,                /* tp_descr_get */
+     0,                                  /* tp_descr_set */
+     offsetof(lru_cache_object, dict),   /* tp_dictoffset */
+     0,                                  /* tp_init */
