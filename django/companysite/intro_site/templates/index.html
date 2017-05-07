@@ -22,10 +22,8 @@
 
 <!-- Header -->
 <header class="w3-display-container w3-content w3-wide" style="max-width:1500px;" id="home">
-  <img class="w3-image" src="{% static 'IMG_1793.jpg' %}" alt="Architecture" width="1500" height="800">
-  <div class="w3-display-middle w3-margin-top w3-center">
-    <h1 class="w3-xxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><b>VE</b></span> <span class="w3-hide-small w3-text-light-grey">Web Designer</span></h1>
-  </div>
+  <img class="w3-image" src="{% static 'IMG_1793.JPG' %}" alt="Architecture" width="1500" height="800">
+  
 </header>
 
 <!-- Page content -->
@@ -106,7 +104,7 @@
     <form action="/contactinfo" method="post">
       {% csrf_token %}
       <input class="w3-input" type="text" placeholder="Name" required name="Name">
-      <input class="w3-input w3-section" type="text" placeholder="Email" required name="Email">
+      <input class="w3-input w3-section" type="email" placeholder="Email" required name="Email">
       <input class="w3-input w3-section" type="text" placeholder="Subject" required name="Subject">
       <input class="w3-input w3-section" type="text" placeholder="Comment" required name="Comment">
       <button class="w3-button w3-black w3-section" type="submit">

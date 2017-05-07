@@ -104,3 +104,12 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
+
+#email setting
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'quanfeiwang@gmail.com'
+EMAIL_HOST_PASSWORD = 'WAcc990803'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+  

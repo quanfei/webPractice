@@ -11,19 +11,24 @@ def index(request):
 
 def contactinfo(request):
     if request.method == "POST":
-        form = ContactForm(request.POST)
-        print("ok")
-        if form.is_valid():
-            print("ok")
-            name= form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            subject = form.cleaned_data['subject']
-            comment = form.cleaned_data['commet']
+        #form = ContactForm(request.POST)
+        #print("ok")
+        #if form.is_valid():
+         #   print("ok")
+            form=request.POST
+            name= form['Name']
+            email = form['Email']
+            subject = form['Subject']
+            comment = form['Comment']
 
             recipients = ['edisonxmt@gmail.com']
-            
-
-            send_mail(subject, comment, email, recipients)
+            send_mail(
+              subject,
+              comment,
+              'quanfeiwang@gmail.com',
+              ['quanfeiwang@gmail.com'],
+            )
+           # send_mail(subject, comment, email, recipients)
     return render(
         request,
         'index.html',
